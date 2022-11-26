@@ -1,6 +1,6 @@
 
 
-### Creating a gamees Table:
+### Creating a Games Table:
 ```sql
 
 CREATE TABLE game (
