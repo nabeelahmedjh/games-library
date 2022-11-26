@@ -78,7 +78,7 @@ CREATE TABLE requirement (
 
 ```sql
 
-CREATE TABLE requirement (
+CREATE TABLE feature (
 
 )
 
