@@ -1,0 +1,15 @@
+{% extends "layout.html"%} {% block title%} main {% endblock %} {%
+  block main %} 
+
+<form action='/add-game' method='POST'>
+    <div class="mb-3">
+      <label for="gamename" class="form-label">Game Title</label>
+      <input type="text" class="form-control" name="game_name" id="fname" aria-describedby="emailHelp">
+    </div>
+  
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock -%}
+  
+

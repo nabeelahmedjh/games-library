@@ -1,0 +1,36 @@
+{% extends "layout.html"%} {% block title%} main {% endblock %} {%
+block main %}
+
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item ">
+          <a class="nav-link active" aria-current="page" href="/add-game">Add Game</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<ol class="list-group list-group-numbered">
+
+  {% for game in context['data'] -%}
+  <li class="list-group-item d-flex justify-content-between align-items-start">
+    <div class="ms-2 me-auto">
+      <div class="fw-bold">{{game[1]}}</div>
+      Content for list item
+    </div>
+    <a type="button" class="btn btn-dark" href="/edit-game/{{game[0]}}">edit</a>
+    <a type="button" class="btn btn-dark" href="/delete-game/{{game[0]}}">delete</a>
+  </li>
+  {% endfor -%}
+</ol>
+
+{% endblock -%}
