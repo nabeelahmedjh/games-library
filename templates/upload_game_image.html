@@ -1,0 +1,21 @@
+{% extends "layout.html"%} {% block title%} main {% endblock %} {%
+block main %}
+
+<form method="POST" action="/upload" enctype="multipart/form-data">
+    <!-- File Upload-->
+    <div class="form-group">
+        <label for="inputFile">File input</label>
+        <input class="form-control-file" type="file" name="inputFile">
+    </div>
+
+    <!-- name -->
+    <div class="form-group">
+        <label for="text">Write Text</label>
+        <input class="form-control" name="name" id="text" rows="5" placeholder="Add a Description">
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock -%}
