@@ -1,0 +1,32 @@
+{% extends "layout.html"%} {% block title%} delete game {% endblock %} {%
+block main %}
+
+
+<form action="#" method="POST">
+    <div class="mb-3">
+        <select name='type' class="form-select" aria-label="Default select ">
+            <option value='' selected>Select Type</option>
+            <option value="minimun">Minimun</option>
+            <option value="maximum">Maximum</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="os" class="form-label">OS</label>
+        <input type="text" class="form-control" name='os' id="exampleInputEmail1" aria-describedby="emailHelp">
+    </div>
+    <div class="mb-3">
+        <label for="cpu" class="form-label">CPU</label>
+        <input type="text" name="cpu" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="memory" class="form-label">Memory</label>
+        <input type="text" name="memory" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="gpu" class="form-label">GPU</label>
+        <input type="text" name="gpu" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Add-Requirements</button>
+</form>
+
+{% endblock %}
