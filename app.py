@@ -21,8 +21,7 @@ conn = cx_Oracle.connect(connectionString)
 cur = conn.cursor()
 
 
- 
- 
+
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == "GET":
@@ -47,9 +46,9 @@ def register():
                 flash("User already exist")
                 return redirect('/register')
             
-            qry = 'INSERT INTO GLP.users (username, password) VALUES (:1, :2)'
+            qry = 'INSERT INTO GLP.users (username, user_type, password) VALUES (:1, :2, :3)'
             
-            cur.execute(qry, [username, password])
+            cur.execute(qry, [username, "regular", password])
             conn.commit()
             flash("Sucessfully registered")
             return redirect('/')
@@ -67,12 +66,11 @@ def login():
         
         username = request.form['username']
         password = request.form['password1']
-        qry = 'SELECT username, password FROM GLP.users WHERE username= :1'
+        qry = 'SELECT username, password, user_type FROM GLP.users WHERE username= :1'
         
         cur.execute(qry, [username])
         
         user = cur.fetchall()
-        print(user)
         if len(user) == 0:
             flash("USER DOESN'T EXIST")
             return redirect(url_for("login"))
@@ -82,6 +80,8 @@ def login():
             return redirect(url_for("login"))
 
         session['user'] = username
+        print(user[0][2])
+        session['user_type'] = user[0][2]
         return redirect(url_for("home"))
 
 @app.route('/logout')
@@ -92,7 +92,7 @@ def logout():
 @app.route('/')
 def home():
 
-    qry = 'SELECT * FROM GLP.game'
+    qry = 'SELECT * FROM GLP.game ORDER BY add_at DESC'
     cur.execute(qry)
     data = cur.fetchall()
     context = {
@@ -100,26 +100,26 @@ def home():
     }
     return render_template("index.html", context=context)
 
+# @app.route('/add-game', methods=['POST', 'GET'])
+# def addGame():
+    
+#     if 'user' not in session or session['user'] == None or session['user_type'] != 'admin':
+#         return redirect(url_for('login'))
+        
+#     if request.method == 'GET':
+       
+#         return render_template('add_game.html')
+#     elif request.method == 'POST':
+#         game_name= request.form['game_name']
+#         print(game_name)
+#         qry = "INSERT INTO GLP.game (game_title) VALUES (:1)"
+#         cur.execute(qry, (game_name,))
+#         conn.commit()
+#         return redirect('/upload')
+#         # return redirect(url_for('/'))
+
 @app.route('/add-game', methods=['POST', 'GET'])
 def addGame():
-    
-
-        
-    if request.method == 'GET':
-        # if 'user' not in session or session['user'] == None:
-        return redirect(url_for('login'))
-        return render_template('add_game.html')
-    elif request.method == 'POST':
-        game_name= request.form['game_name']
-        print(game_name)
-        qry = "INSERT INTO GLP.game (game_title) VALUES (:1)"
-        cur.execute(qry, (game_name,))
-        conn.commit()
-        return redirect('/upload')
-        # return redirect(url_for('/'))
-
-@app.route('/upload', methods=['POST', 'GET'])
-def upload():
         
     if 'user' not in session:
         return redirect(url_for('login'))
@@ -139,14 +139,46 @@ def upload():
     else:
         return render_template('upload_game_image.html')
 
-@app.route('/add-requirements/<int:pk>')
+@app.route('/add-requirements/<int:pk>', methods=["POST", "GET"])
+def addRequirements(pk):
+    if 'user' not in session or session['user'] == None:
+        flash("LOGIN REQUIRED FOR VIEWING DASHBOARD")
+        return redirect(url_for('login'))
+    if session['user_type'] != 'admin':
+        flash("User is not an admin")
+        return redirect(url_for('login'))
 
+    if request.method == 'GET':
+        return render_template('add_requirements.html')
+    else:
+        type = request.form.get('type')
+        os = request.form.get('os')
+        cpu = request.form.get('cpu')
+        memory = request.form.get('memory')
+        gpu = request.form.get('gpu')
+        
+        print(type)
+        if os == '' or cpu == '' or memory == '' or gpu == '' or type == '':
+            flash("Fill all the required columns")
+            return redirect('#')
+        
+        qry = "INSERT INTO GLP.requirements (game_id, req_type, os, cpu, memory, gpu) VALUES (:1, :2, :3, :4, :5, :6)"
+        
+        cur.execute(qry, [pk, type, os, cpu, memory, gpu])
+
+        conn.commit()
+        
+        return redirect('')
+        
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     
     if 'user' not in session or session['user'] == None:
         flash("LOGIN REQUIRED FOR VIEWING DASHBOARD")
+        return redirect(url_for('login'))
+    if session['user_type'] != 'admin':
+        flash("User is not an admin")
         return redirect(url_for('login'))
     
     if request.method == 'GET':
@@ -157,9 +189,6 @@ def dashboard():
         context = {
             'data': data
         }
-        for game in context['data']:
-            print(game)
-            
         return render_template('dashboard.html', context=context)
 
 
