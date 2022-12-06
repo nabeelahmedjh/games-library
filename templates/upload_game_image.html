@@ -1,17 +1,17 @@
 {% extends "layout.html"%} {% block title%} main {% endblock %} {%
 block main %}
 
-<form method="POST" action="/upload" enctype="multipart/form-data">
+<form method="POST" action="/add-game" enctype="multipart/form-data">
     <!-- File Upload-->
     <div class="form-group">
-        <label for="inputFile">File input</label>
+        <label for="inputFile">Game Cover</label>
         <input class="form-control-file" type="file" name="inputFile">
     </div>
 
     <!-- name -->
     <div class="form-group">
-        <label for="text">Write Text</label>
-        <input class="form-control" name="name" id="text" rows="5" placeholder="Add a Description">
+        <label for="text">Game Title</label>
+        <input class="form-control" name="name" id="text" rows="5" placeholder="input game name here">
     </div>
 
     <!-- Submit -->
