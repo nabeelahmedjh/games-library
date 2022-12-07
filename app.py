@@ -169,7 +169,35 @@ def addRequirements(pk):
         conn.commit()
         
         return redirect('')
+
+@app.route('/add-details/<int:pk>', methods=["POST", "GET"])
+def addDetails(pk):
+    
+    if 'user' not in session or session['user'] == None:
+        flash("LOGIN REQUIRED FOR VIEWING DASHBOARD")
+        return redirect(url_for('login'))
+    if session['user_type'] != 'admin':
+        flash("User is not an admin")
+        return redirect(url_for('login'))
+
+    if request.method == 'GET':
+        qry = 'SELECT * FROM GLP.genre'
         
+        cur.execute(qry)
+        
+        genres = cur.fetchall()
+        
+        context = {
+            "genres": genres
+        }
+        
+        
+        
+        return render_template('add_details.html', context=context)
+    else:
+        pass
+    
+
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
