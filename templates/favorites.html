@@ -3,6 +3,7 @@ block main %}
 
 
 <div class="container text-center">
+    <h1 class="text-center m-5">FAVORITES</h1>
     <div class="row">
         {% for game in context['data'] -%}
 
@@ -10,7 +11,9 @@ block main %}
             <a href="/game/{{game[0]}}"><img class='game-img' src="data:image/jpeg;base64, {{game[3]}}" alt=" Red dot">
                 <h3> {{game[1].upper()}} </h3>
             </a>
-
+            <form method='post' action='/remove-fav/{{game[0]}}' class="d-grid gap-2 col-6 mx-auto">
+                <button class="btn btn-outline-warning" type="submit">Remove</button>
+            </form>
         </div>
 
         {% endfor %}

@@ -25,8 +25,13 @@ block main %}
         <input type="number" name="rating" class="form-control">
     </div>
     <div class="mb-3">
-        <label for="gpu" class="form-label">GPU</label>
-        <input type="text" name="gpu" class="form-control">
+
+        <label for="gpu" class="form-label">Genres</label>
+        <br>
+        {% for genre in context['genres'] %}
+        <input type="checkbox" name="{{genre[0]}}" value="Bike">
+        <label for="vehicle1">{{genre[1]}}</label><br>
+        {%endfor%}
     </div>
     <button type="submit" class="btn btn-primary">Add Details</button>
 </form>

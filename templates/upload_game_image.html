@@ -1,21 +1,29 @@
 {% extends "layout.html"%} {% block title%} main {% endblock %} {%
 block main %}
 
-<form method="POST" action="/add-game" enctype="multipart/form-data">
-    <!-- File Upload-->
-    <div class="form-group">
-        <label for="inputFile">Game Cover</label>
-        <input class="form-control-file" type="file" name="inputFile">
-    </div>
+<div class="container">
+    <form method="POST" action="/add-game" enctype="multipart/form-data">
+        <!-- File Upload-->
+        <div class="form-group">
+            <label for="inputFile">Game Cover</label>
+            <input class="form-control-file" type="file" name="inputFile">
+        </div>
 
-    <!-- name -->
-    <div class="form-group">
-        <label for="text">Game Title</label>
-        <input class="form-control" name="name" id="text" rows="5" placeholder="input game name here">
-    </div>
+        <!-- name -->
+        <div class="form-group">
+            <label for="text">Game Title</label>
+            <input class="form-control" name="name" id="text" rows="5" placeholder="input game name here">
+        </div>
 
-    <!-- Submit -->
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+
+        <div class="form-group">
+            <label for="text">Game Description</label>
+            <textarea id="" name="game_desc" rows="4" cols="50"></textarea>
+        </div>
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
 
 {% endblock -%}

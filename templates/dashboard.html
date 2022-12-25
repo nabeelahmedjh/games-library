@@ -3,7 +3,7 @@ block main %}
 
 <nav class="navbar navbar-expand-lg bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" href="#">ADMIN</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -24,12 +24,11 @@ block main %}
   {% for game in context['data'] -%}
   <li class="list-group-item d-flex justify-content-between align-items-start">
     <div class="ms-2 me-auto">
-      <img src="data:image/jpeg;base64, {{game[3]}}" alt=" Red dot">
+      <!-- <img class="game-img" src="data:image/jpeg;base64, {{game[3]}}" alt=" Red dot"> -->
       <div class=" fw-bold">{{game[1]}}
       </div>
-      Content for list item
     </div>
-    <a type="button" class="btn btn-dark" href="/edit-game/{{game[0]}}">edit</a>
+    <a type="button" class="btn btn-dark me-2" href="/edit-game/{{game[0]}}">edit</a>
     <a type="button" class="btn btn-dark" href="/delete-game/{{game[0]}}">delete</a>
   </li>
   {% endfor -%}

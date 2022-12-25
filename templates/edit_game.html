@@ -2,14 +2,77 @@
 block main %}
 
 
-<form action="#" method="POST">
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Game Title</label>
-        <input type="text" class="form-control" name='game_title' value="{{context['data'][0][1]}}"
-            aria-describedby="emailHelp">
-        <div id="emailHelp" class="form-text">Edit the title of the game</div>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="container">
+    <form method="POST" action="#">
+        <!-- File Upload
+        <div class="form-group">
+            <label for="inputFile">Game Cover</label>
+            <input class="form-control-file" type="file" name="inputFile">
+        </div> -->
+
+        <!-- name -->
+        <div class="form-group">
+            <label for="text">Game Title</label>
+            <input class="form-control" name="game_name" id="text" rows="5" value="{{context['game_details'][0][1]}}">
+        </div>
+
+
+        <div class="form-group">
+            <label for="text">Game Description</label>
+            <textarea id="" name="game_desc" rows="4" cols="50">{{context['game_details'][0][4]}}</textarea>
+        </div>
+        <div class="mb-3">
+            <h1>Minimun Requirements</h1>
+        </div>
+        <div class="mb-3">
+            <label for="os" class="form-label">OS</label>
+            <input type="text" class="form-control" name='min_os' id="exampleInputEmail1"
+                value="{{context['game_requirements'][0][2]}}" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+            <label for="cpu" class="form-label">CPU</label>
+            <input type="text" name="min_cpu" value="{{context['game_requirements'][0][3]}}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="memory" class="form-label">Memory</label>
+            <input type="text" name="min_memory" value="{{context['game_requirements'][0][4]}}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="gpu" class="form-label">GPU</label>
+            <input type="text" name="min_gpu" value="{{context['game_requirements'][0][5]}}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <h1>Recommended Requirements</h1>
+        </div>
+        <div class="mb-3">
+            <label for="os" class="form-label">OS</label>
+            <input type="text" class="form-control" name='max_os' value="{{context['game_requirements'][1][3]}}"
+                aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+            <label for="cpu" class="form-label">CPU</label>
+            <input type="text" name="max_cpu" value="{{context['game_requirements'][1][3]}}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="memory" class="form-label">Memory</label>
+            <input type="text" name="max_memory" value="{{context['game_requirements'][1][4]}}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="gpu" class="form-label">GPU</label>
+            <input type="text" name="max_gpu" value="{{context['game_requirements'][1][5]}}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="cpu" class="form-label">Download Link</label>
+            <input type="text" name="download_link" value="{{context['game_details'][0][6]}}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="memory" class="form-label">Rating</label>
+            <input type="number" name="rating" min="0" max="5" value="{{context['game_details'][0][7]}}"
+                class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Details</button>
+
+    </form>
+</div>
 
 {% endblock -%}

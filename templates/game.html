@@ -1,0 +1,70 @@
+{% extends "layout.html"%} {% block title%} main {% endblock %} {%
+block main %}
+
+
+<div class="container row text-center">
+    <div class="container col">
+        <img class='game-img-cover' src="data:image/jpeg;base64, {{context['game_details'][0][3]}}" alt=" Red dot">
+
+        <p class="pt-3"><span class="bold">Genres: </span>
+            {% for genre in context['game_genres'] %}
+            <span>{{genre[1].capitalize()}}, </span>
+            {% endfor %}
+        </p>
+
+    </div>
+
+    <div class="container col">
+        <h1 class="pb-4">{{context['game_details'][0][1].upper()}}</h1>
+        <p>{{context['game_details'][0][4]}}</p>
+
+        <p>
+            {% for _ in range(context['game_details'][0][7]) %}
+            <span>⭐</span>
+            {% endfor %}
+        </p>
+
+
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <a class="btn btn-danger btn-cus" href="{{context['game_details'][0][6]}}" type="button">BUY NOW</a>
+            <form action="/favorites/{{context['game_details'][0][0]}}" method="POST">
+                <button class="btn btn-outline-success btn-cus" type="submit">ADD TO FAVORITES</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+<h1 class="text-center pt-5 pb-4 ">SYSTEM REQUIREMENTS</h1>
+<div class="container row">
+    <div class="container ms-5 ms-5 ms-5 col ">
+        <h2 class="">MINIMUM</h2>
+        <div>
+            <h5 class="pt-4 bold req-title">OS</h5>
+            <p>{{context['game_requirements'][0][2]}}</p>
+            <h5 class="pt-4 bold req-title">PROCESSOR</h5>
+            <p>{{context['game_requirements'][0][3]}}</p>
+            <h5 class="pt-4 bold req-title">GPU</h5>
+            <p>{{context['game_requirements'][0][5]}}</p>
+            <h5 class="pt-4 bold req-title">MEMORY</h5>
+            <p>{{context['game_requirements'][0][4]}}</p>
+        </div>
+    </div>
+    <div class="container recommended-req col ">
+        <h2 class="">RECOMMENDED</h2>
+
+        <div class="">
+            <h5 class="pt-4 bold req-title">OS</h5>
+            <p>{{context['game_requirements'][1][2]}}</p>
+            <h5 class="pt-4 bold req-title">PROCESSOR</h5>
+            <p>{{context['game_requirements'][1][3]}}</p>
+            <h5 class="pt-4 bold req-title">GPU</h5>
+            <p>{{context['game_requirements'][1][5]}}</p>
+            <h5 class="pt-4 bold req-title">MEMORY</h5>
+            <p>{{context['game_requirements'][1][4]}}</p>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock -%}
