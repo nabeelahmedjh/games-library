@@ -100,6 +100,66 @@ def home():
     }
     return render_template("index.html", context=context)
 
+
+@app.route('/favorites/<int:pk>', methods=["POST", "GET"])
+def favorites(pk):
+    
+    if 'user' not in session or session['user'] == None:
+        flash("LOGIN REQUIRED FOR ADDING GAME INTO FAVORITES")
+        return redirect(url_for('login'))
+
+    qry = 'SELECT user_id FROM GLP.users WHERE username = :1'
+    cur.execute(qry, [session['user']])
+    user_id = cur.fetchall()[0][0]
+    
+    if request.method == "GET":
+        
+        qry = "SELECT * FROM GLP.game LEFT OUTER JOIN GLP.favorites ON GLP.game.game_id = GLP.favorites.game_id WHERE GLP.favorites.user_id = :1"
+        cur.execute(qry, [user_id])
+        data = cur.fetchall()
+        context = {
+            'data': data
+        }
+        return render_template("favorites.html", context=context)
+    else:   
+        qry = 'SELECT * FROM GLP.favorites WHERE user_id = :1 AND game_id = :2'
+        cur.execute(qry, [user_id, pk])
+        res = cur.fetchall()
+        if len(res) != 0:
+            flash("ALREADY ADDED TO THE FAVOTIES GALLERY")
+            return redirect(f'/game/{pk}')
+        qry = "INSERT INTO GLP.favorites VALUES (:1, :2)";
+        cur.execute(qry, [pk, user_id])
+        conn.commit()
+        flash("SUCCESSFULLY ADDED TO THE FAVOTIES GALLERY")
+        return redirect(f'/game/{pk}')
+        
+
+
+@app.route('/game/<int:pk>', methods=["POST", "GET"])
+def game(pk):
+    
+    qry = "SELECT * FROM GLP.game WHERE game_id = :1"
+    cur.execute(qry, [pk])
+    game_details = cur.fetchall()
+    
+    qry = "SELECT GLP.genre.genre_id, GLP.genre.genre_name, GLP.genre.genre_description FROM GLP.genre LEFT OUTER JOIN GLP.has_genres ON GLP.genre.genre_id = GLP.has_genres.genre_id WHERE GLP.has_genres.game_id = :1";
+    cur.execute(qry, [pk])
+    game_genres = cur.fetchall()
+    
+    qry = "SELECT * FROM GLP.requirements WHERE game_id = :1"
+    cur.execute(qry, [pk])
+    game_requirements = cur.fetchall()
+    
+    context = {
+        'game_details': game_details,
+        'game_genres': game_genres,
+        'game_requirements': game_requirements
+    }
+    
+    return render_template('game.html', context=context)
+
+
 # @app.route('/add-game', methods=['POST', 'GET'])
 # def addGame():
     
@@ -130,12 +190,16 @@ def addGame():
         data = file.read()
         render_file = render_picture(data)
         name = request.form['name']
-        print(render_file)
-        qry = "INSERT INTO GLP.game (game_title, game_cover) VALUES (:1, :2)"
-        cur.execute(qry, [name, render_file])
+        
+        game_desc = request.form['game_desc']
+        qry = "INSERT INTO GLP.game (game_title, game_cover, game_desc) VALUES (:1, :2, :3)"
+        cur.execute(qry, [name, render_file, game_desc])
         conn.commit()
-        return f"success"
-        return render_template('upload.html')
+        qry = "SELECT game_id FROM GLP.game WHERE game_title = :1"
+        cur.execute(qry, [name])
+        id = cur.fetchall()
+        
+        return redirect(f"/add-requirements/{id[0][0]}")
     else:
         return render_template('upload_game_image.html')
 
@@ -151,13 +215,26 @@ def addRequirements(pk):
     if request.method == 'GET':
         return render_template('add_requirements.html')
     else:
-        type = request.form.get('type')
-        os = request.form.get('os')
-        cpu = request.form.get('cpu')
-        memory = request.form.get('memory')
-        gpu = request.form.get('gpu')
+        type = 'minimum'
+        os = request.form.get('min_os')
+        cpu = request.form.get('min_cpu')
+        memory = request.form.get('min_memory')
+        gpu = request.form.get('min_gpu')
         
-        print(type)
+        if os == '' or cpu == '' or memory == '' or gpu == '' or type == '':
+            flash("Fill all the required columns")
+            return redirect('#')
+        
+        qry = "INSERT INTO GLP.requirements (game_id, req_type, os, cpu, memory, gpu) VALUES (:1, :2, :3, :4, :5, :6)"
+        
+        cur.execute(qry, [pk, type, os, cpu, memory, gpu])
+        
+        type = 'recommended'
+        os = request.form.get('max_os')
+        cpu = request.form.get('max_cpu')
+        memory = request.form.get('max_memory')
+        gpu = request.form.get('max_gpu')
+        
         if os == '' or cpu == '' or memory == '' or gpu == '' or type == '':
             flash("Fill all the required columns")
             return redirect('#')
@@ -168,7 +245,7 @@ def addRequirements(pk):
 
         conn.commit()
         
-        return redirect('')
+        return redirect(f'/add-details/{pk}')
 
 @app.route('/add-details/<int:pk>', methods=["POST", "GET"])
 def addDetails(pk):
@@ -192,12 +269,24 @@ def addDetails(pk):
         }
         
         
-        
+        print(genres)
         return render_template('add_details.html', context=context)
     else:
-        pass
-    
-
+        release_date = request.form.get("releaseDate")
+        download_link = request.form.get("downloadLink")
+        rating = int(request.form.get("rating"))
+        print(release_date)
+        
+        qry = "UPDATE GLP.game SET release_date = to_date(:1, 'yyyy-mm-dd'), download_link = :2, rating = :3 WHERE game_id = :4"
+        cur.execute(qry, [release_date, download_link, rating, pk])
+        conn.commit()
+        for i in range(17):
+            print(request.form.get(f"{i}"))
+            if request.form.get(f"{i}") != None:
+                qry = "INSERT INTO GLP.has_genres VALUES (:1, :2)"
+                cur.execute(qry, [pk, i])
+                conn.commit()
+        return redirect("/")
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
@@ -225,6 +314,14 @@ def deleteGame(pk):
     if request.method == 'GET':
         return render_template('delete_game.html')
     elif request.method == 'POST':
+        qry = 'DELETE FROM GLP.requirements WHERE game_id = :1'
+        cur.execute(qry, [pk])
+        conn.commit()
+        
+        qry = 'DELETE FROM GLP.has_genres WHERE game_id = :1'
+        cur.execute(qry, [pk])
+        conn.commit()
+        
         qry = 'DELETE FROM GLP.game WHERE game_id = :1'
         cur.execute(qry, [pk])
         conn.commit()
@@ -234,19 +331,54 @@ def deleteGame(pk):
 @app.route('/edit-game/<int:pk>', methods=['GET', 'POST'])
 def editGame(pk):
     if request.method == 'GET':
-        qry = 'SELECT * FROM GLP.game WHERE game_id=:1'
+        qry = "SELECT * FROM GLP.game WHERE game_id = :1"
         cur.execute(qry, [pk])
-        data = cur.fetchall()
+        game_details = cur.fetchall()
+        
+        qry = "SELECT GLP.genre.genre_id, GLP.genre.genre_name, GLP.genre.genre_description FROM GLP.genre LEFT OUTER JOIN GLP.has_genres ON GLP.genre.genre_id = GLP.has_genres.genre_id WHERE GLP.has_genres.game_id = :1";
+        cur.execute(qry, [pk])
+        game_genres = cur.fetchall()
+        
+        qry = "SELECT * FROM GLP.requirements WHERE game_id = :1"
+        cur.execute(qry, [pk])
+        game_requirements = cur.fetchall()
+        
         context = {
-            "data": data
+            'game_details': game_details,
+            'game_genres': game_genres,
+            'game_requirements': game_requirements
         }
+        
         return render_template('edit_game.html', context=context)
     elif request.method == 'POST':
-        qry = "UPDATE GLP.game SET game_title = :1 WHERE game_id = :2"
-        updated_data = request.form
-        game_title = updated_data['game_title'].lower()
         
-        cur.execute(qry, [game_title, pk])
+        # updating minimun req
+        os = request.form.get('min_os')
+        cpu = request.form.get('min_cpu')
+        memory = request.form.get('min_memory')
+        gpu = request.form.get('min_gpu')
+        
+        qry="UPDATE GLP.requirements SET os = :1, cpu = :2, memory = :3, gpu = :4 WHERE game_id = :5 AND req_type = 'minimum'"
+        cur.execute(qry, [os, cpu, memory, gpu, pk])
+        conn.commit()
+        
+        # updating recommended req
+        os = request.form.get('max_os')
+        cpu = request.form.get('max_cpu')
+        memory = request.form.get('max_memory')
+        gpu = request.form.get('max_gpu')
+        
+        qry="UPDATE GLP.requirements SET os = :1, cpu = :2, memory = :3, gpu = :4 WHERE game_id = :5 AND req_type = 'recommended'"
+        cur.execute(qry, [os, cpu, memory, gpu, pk])
+        conn.commit()
+        
+        game_title = request.form.get('game_name').lower()
+        game_desc = request.form.get('game_desc').lower()
+        rating = request.form.get('rating')
+        download_link = request.form.get('download_link')
+        
+        qry = "UPDATE GLP.game SET game_title = :1, game_DESC = :2, download_link = :3, rating = :4 WHERE game_id = :5"
+        cur.execute(qry, [game_title, game_desc, download_link, rating, pk])
         conn.commit()
         return redirect('/dashboard')
 
