@@ -135,6 +135,17 @@ def favorites(pk):
         return redirect(f'/game/{pk}')
         
 
+@app.route('/remove-fav/<int:pk>', methods=["POST", "GET"])
+def removeFavorite(pk):
+    qry = 'SELECT user_id FROM GLP.users WHERE username = :1'
+    cur.execute(qry, [session['user']])
+    user_id = cur.fetchall()[0][0]
+    
+    if request.method == "POST":
+        qry = "DELETE FROM GLP.favorites WHERE game_id = :1 AND user_id = :2"
+        cur.execute(qry, [pk, user_id])
+        conn.commit()
+        return redirect('/favorites/0')
 
 @app.route('/game/<int:pk>', methods=["POST", "GET"])
 def game(pk):
