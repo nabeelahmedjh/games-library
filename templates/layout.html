@@ -31,7 +31,7 @@
 
   <nav class="navbar navbar-expand-lg nav-custom">
     <div class="container-fluid">
-      <a class="navbar-brand nav-item-cus" href="#">BSN</a>
+      <a class="navbar-brand nav-item-cus" href="#">A Game Library</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -41,19 +41,30 @@
           <li class="nav-item">
             <a class="nav-link nav-item-cus" aria-current="page" href="/">Home</a>
           </li>
+
+          {% if not(session['user']) %}
           <li class="nav-item">
             <a class="nav-link nav-item-cus" href="/login">Login</a>
           </li>
+
           <li class="nav-item">
             <a class="nav-link nav-item-cus" href="/register">Register</a>
           </li>
+          {% endif %}
+          <form action='/' method="POST" class="d-flex" role="search">
+            <input class="form-control me-2 ms-3" name="constraint" type="search" placeholder="Search"
+              aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
         </ul>
+        {% if session['user'] %}
         <li class="d-flex nav-item">
           <a class="nav-link me-3 nav-item-cus" href="/favorites/0">Favorites</a>
         </li>
         <li class="d-flex nav-item">
-          <a class="nav-link nav-item-cus" href="/dashboard">Dashboard</a>
+          <a class="nav-link me-3 nav-item-cus" href="/logout">Logout</a>
         </li>
+        {% endif %}
       </div>
     </div>
   </nav>
