@@ -80,7 +80,6 @@ def login():
             return redirect(url_for("login"))
 
         session['user'] = username
-        print(user[0][2])
         session['user_type'] = user[0][2]
         return redirect(url_for("home"))
 
@@ -89,17 +88,27 @@ def logout():
     session['user'] =  None
     return redirect(url_for('home'))
         
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
+        if request.method == "POST":
+            constraint = request.form.get('constraint')
+            print(constraint)
+            qry = f"SELECT * FROM GLP.game WHERE game_title LIKE '%{constraint.lower()}%' OR game_title LIKE '%{constraint.capitalize()}%' OR game_title LIKE '%{constraint.upper()}%' ORDER BY add_at DESC"
+            cur.execute(qry)
+            data = cur.fetchall()
+            context = {
+                'data': data
+            }
+            return render_template("index.html", context=context)
+        else:
 
-    qry = 'SELECT * FROM GLP.game ORDER BY add_at DESC'
-    cur.execute(qry)
-    data = cur.fetchall()
-    context = {
-        'data': data
-    }
-    return render_template("index.html", context=context)
-
+            qry = "SELECT * FROM GLP.game ORDER BY add_at DESC"
+            cur.execute(qry)
+            data = cur.fetchall()
+            context = {
+                'data': data
+            }
+            return render_template("index.html", context=context)
 
 @app.route('/favorites/<int:pk>', methods=["POST", "GET"])
 def favorites(pk):
