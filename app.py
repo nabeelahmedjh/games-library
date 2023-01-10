@@ -101,7 +101,7 @@ def home():
             }
             return render_template("index.html", context=context)
         else:
-
+            
             qry = "SELECT * FROM GLP.game ORDER BY add_at DESC"
             cur.execute(qry)
             data = cur.fetchall()
@@ -201,7 +201,7 @@ def game(pk):
 @app.route('/add-game', methods=['POST', 'GET'])
 def addGame():
         
-    if 'user' not in session:
+    if 'user' not in session and session['user_type'] != 'admin':
         return redirect(url_for('login'))
 
 
